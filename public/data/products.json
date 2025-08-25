@@ -1,0 +1,32 @@
+{
+  "pizza": [
+    {
+      "id": 1,
+      "name": { "de": "PIZZA MARGHERITA", "en": "PIZZA MARGHERITA" },
+      "description": { "de": "Tomatensauce, Mozzarella", "en": "Tomato sauce, Mozzarella" },
+      "image": "/pizza/Margherita.jpg",
+      "sizes": {
+        "small": { "label": { "de": "ca26cm", "en": "ca26cm" }, "price": 9 },
+        "medium": { "label": { "de": "ca32cm", "en": "ca32cm" }, "price": 11.90 },
+        "large": { "label": { "de": "ca38cm", "en": "ca38cm" }, "price": 15.90 }
+      },
+      "suggested": {
+        "small": {
+          "cheese": [
+            { "id": 900, "name": { "de": "Extra Käse", "en": "Extra cheese" }, "price": 1.5 }
+          ]
+        }
+      }
+    }
+  ],
+  "drinks": [
+    {
+      "id": 80,
+      "name": { "de": "COCA-COLA LIGHT", "en": "Coca-Cola Light" },
+      "image": "/img/IMG-20250723-WA0034.jpg",
+      "sizes": {
+        "large": { "label": { "de": "1,0I", "en": "1,0I" }, "price": 3.50 }
+      }
+    }
+  ]
+}
