@@ -126,6 +126,84 @@ app.get('/api/products', (req, res) => {
   });
 });
 
+
+// server.js (Node.js + Express)
+app.post('/api/forward-to-liefersoft', async (req, res) => {
+  try {
+    const orderPayload = req.body;
+
+    // 1. إرسال طلب تسجيل الدخول للحصول على accessToken
+    const loginResponse = await fetch('https://api.liefersoft.de/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8'
+      },
+      body: JSON.stringify({
+        login: process.env.LIEFERSOFT_LOGIN,
+        password: process.env.LIEFERSOFT_PASSWORD,
+        companyId: process.env.LIEFERSOFT_COMPANY_ID
+      })
+    });
+
+    if (!loginResponse.ok) {
+      const loginError = await loginResponse.text();
+      console.error('Login failed:', loginResponse.status, loginError);
+      return res.status(500).json({ error: 'Liefersoft login failed', details: loginError });
+    }
+
+    const loginData = await loginResponse.json();
+    const accessToken = loginData.accessToken;
+
+    if (!accessToken) {
+      console.error('AccessToken not received from Liefersoft');
+      return res.status(500).json({ error: 'Token not received from Liefersoft' });
+    }
+
+    // 2. إرسال الطلب إلى Liefersoft باستخدام التوكن
+    const ordersResponse = await fetch('https://api.liefersoft.de/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(orderPayload)
+    });
+
+    const responseData = await ordersResponse.text(); // استخدم نص أولًا
+
+    if (!ordersResponse.ok) {
+      console.error('Liefersoft API Error:', ordersResponse.status, responseData);
+      return res.status(ordersResponse.status).json({
+        error: 'Failed to send request to Liefersoft',
+        details: responseData
+      });
+    }
+
+    // تحويل الاستجابة إلى JSON
+    let result;
+    try {
+      result = JSON.parse(responseData);
+    } catch (parseError) {
+      // إذا لم يكن JSON، أعد كنص
+      result = { message: 'Request successful, but response is not JSON', raw: responseData };
+    }
+
+    // 3. أعد النجاح إلى العميل
+    return res.status(200).json({
+      success: true,
+      message: 'Request sent successfully',
+      data: result
+    });
+
+  } catch (err) {
+    console.error('Server Error:', err);
+    return res.status(500).json({
+      error: 'Internal server error',
+      details: err.message
+    });
+  }
+});
+
 // --- حفظ طلب جديد (من واجهة المستخدم) ---
 app.post('/api/orders', (req, res) => {
   const newOrder = { ...req.body, id: Date.now(), createdAt: new Date().toISOString(), status: 'pending' };
@@ -420,6 +498,19 @@ app.get('/api/checkout-session', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+app.get('/api/google-maps-key', (req, res) => {
+  // المفتاح مخفي في ملف .env
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API key not configured' });
+  }
+
+  res.json({ key: apiKey });
+});
+
 
 // 🔹 أخيرًا: أي مسار غير معالج (وليس API أو data) يُوجَّه إلى index.html
 app.get('*', (req, res) => {
