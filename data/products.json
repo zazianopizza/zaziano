@@ -20156,7 +20156,7 @@
         "de": "Mit Tomatensauce und frisches Basilikum",
         "en": "With tomato sauce and fresh basil"
       },
-      "image": "/pasta/Carbonara.jpg",
+      "image": "/pasta/Aglio.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -20177,7 +20177,7 @@
         "de": "In Olivenöl geschwenkt mit Knoblauch und Tomaten",
         "en": "Tossed in olive oil with garlic and tomatoes"
       },
-      "image": "/pasta/Aglio.jpg",
+      "image": "/pasta/Auflauf.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -20240,7 +20240,7 @@
         "de": "Hähnchenbrust, Paprika, Spinat, Champignons, Sahnesauce mit Käse Überbacken",
         "en": "Chicken breast, peppers, spinach, mushrooms, cream sauce with cheese gratin"
       },
-      "image": "/pasta/Auflauf.jpg",
+      "image": "/pasta/PastaAuflauf.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -20261,7 +20261,7 @@
         "de": "Broccoli, Mais, Champignons, Sahnesauce mit Käse überbacken",
         "en": "Broccoli, corn, mushrooms, cream sauce topped with cheese"
       },
-      "image": "/pasta/Auflauf.jpg",
+      "image": "/pasta/AUFLAUF.png",
       "sizes": {
         "large": {
           "label": {
@@ -28260,7 +28260,7 @@
         "de": "Mit Käse, Sahnesauce",
         "en": "With cheese, cream sauce"
       },
-      "image": "/haehnchen/KäseSchnitzel.jpg",
+      "image": "/haehnchen/Hawaii.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28281,7 +28281,7 @@
         "de": "Mit Broccoli, Paprika, Sahnesauce",
         "en": "With broccoli, peppers, cream sauce"
       },
-      "image": "/haehnchen/Spezial.jpg",
+      "image": "/haehnchen/Spinat.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28302,7 +28302,7 @@
         "de": "Mit Spinat, Gorgonzola, Sahnesauce",
         "en": "With spinach, Gorgonzola, cream sauce"
       },
-      "image": "/haehnchen/Spinat.jpg",
+      "image": "/haehnchen/Jäger.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28323,7 +28323,7 @@
         "de": "Mit Zitrone",
         "en": "with lemon"
       },
-      "image": "/haehnchen/Schnitzel.jpg",
+      "image": "/haehnchen/KäseSchnitzel.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28344,7 +28344,7 @@
         "de": "Mit Zwiebel, Champignons, pikante Sahnesauce",
         "en": "With onions, mushrooms, spicy cream sauce"
       },
-      "image": "/haehnchen/Jäger.jpg",
+      "image": "/haehnchen/Hollandaise.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28365,7 +28365,7 @@
         "de": "Mit Ananas, Käse, Sahnesauce",
         "en": "With pineapple, cheese, cream sauce"
       },
-      "image": "/haehnchen/Hawaii.jpg",
+      "image": "/haehnchen/Spezial.jpg",
       "sizes": {
         "large": {
           "label": {
@@ -28386,7 +28386,7 @@
         "de": "Mit Broccoli, Sauce Hollandaise und Sahnesauce",
         "en": "With broccoli, hollandaise sauce and cream sauce"
       },
-      "image": "/haehnchen/Hollandaise.jpg",
+      "image": "/haehnchen/Schnitzelone.jpg",
       "sizes": {
         "large": {
           "label": {
