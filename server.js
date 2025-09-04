@@ -4,8 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import cors from 'cors';
-import multer from 'multer'; 
-import bcrypt from 'bcrypt'; 
+import multer from 'multer'; // ← أضف هذه المكتبة
+import bcrypt from 'bcrypt'; // ← نستخدمه لتشفير كلمة المرور
+
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
@@ -32,24 +33,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // --- تخزين كلمات المرور للمشرفين (في ملف أو قاعدة بيانات لاحقًا) ---
-const ADMIN_FILE = path.join(__dirname, 'data', 'admins.json');
+const SALT_ROUNDS = 10;
 
-// تحميل المشرفين
+// تحميل بيانات المشرف من البيئة
 const loadAdmins = () => {
-  if (!fs.existsSync(ADMIN_FILE)) {
-    const defaultAdmins = [
-      {
-        id: 1,
-        username: 'zaziano',
-        password: '$2b$10$7LaKUgXaVUvEUFFbV6IzyOQJStsxNgrX6Qghi/HYWQg5jk4Ru.oW2' 
-      }
-    ];
-    fs.writeFileSync(ADMIN_FILE, JSON.stringify(defaultAdmins, null, 2));
-    return defaultAdmins;
+  const username = process.env.ADMIN_USERNAME;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!username || !password) {
+    console.error('❌ يجب تحديد ADMIN_USERNAME و ADMIN_PASSWORD في ملف .env');
+    process.exit(1);
   }
-  return JSON.parse(fs.readFileSync(ADMIN_FILE, 'utf8'));
+
+  // تشفير كلمة المرور عند التشغيل
+  const hashedPassword = bcrypt.hashSync(password, SALT_ROUNDS);
+
+  // إرجاع مصفوفة تحتوي على المشرف (في الذاكرة فقط)
+  return [
+    {
+      id: 1,
+      username,
+      password: hashedPassword
+    }
+  ];
 };
 
+// تحميل المشرفين إلى الذاكرة
 let admins = loadAdmins();
 
 // --- نقطة نهاية تسجيل الدخول ---
