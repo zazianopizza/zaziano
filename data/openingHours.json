@@ -1,5 +1,51 @@
 {
-  "open": "01:00",
-  "close": "23:55",
-  "active": true
+  "monday": {
+    "open": true,
+    "openingTime": "09:00",
+    "closingTime": "18:00",
+    "breakStart": "12:00",
+    "breakEnd": "13:00"
+  },
+  "tuesday": {
+    "open": true,
+    "openingTime": "09:00",
+    "closingTime": "18:00",
+    "breakStart": null,
+    "breakEnd": null
+  },
+  "wednesday": {
+    "open": false,
+    "openingTime": "00:00",
+    "closingTime": "18:00",
+    "breakStart": null,
+    "breakEnd": null
+  },
+  "thursday": {
+    "open": true,
+    "openingTime": "09:00",
+    "closingTime": "18:00",
+    "breakStart": "12:30",
+    "breakEnd": "13:30"
+  },
+  "friday": {
+    "open": true,
+    "openingTime": "09:00",
+    "closingTime": "16:00",
+    "breakStart": null,
+    "breakEnd": null
+  },
+  "saturday": {
+    "open": true,
+    "openingTime": "10:02",
+    "closingTime": "01:00",
+    "breakStart": null,
+    "breakEnd": null
+  },
+  "sunday": {
+    "open": true,
+    "openingTime": "05:15",
+    "closingTime": "04:25",
+    "breakStart": null,
+    "breakEnd": null
+  }
 }
