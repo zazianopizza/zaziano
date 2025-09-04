@@ -361,42 +361,36 @@ app.post('/api/send-order-email', async (req, res) => {
 });
 
 // --- تحميل أوقات العمل ---
+const HOURS_FILE = path.join(__dirname, 'data','openingHours.json');
+
+// GET: جلب أوقات العمل
 app.get('/api/opening-hours', (req, res) => {
-  const filePath = path.join(__dirname, 'data', 'openingHours.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('openingHours.json konnte nicht gelesen werden:', err);
-      return res.status(500).json({ error: 'Arbeitsstunden konnten nicht geladen werden' });
-    }
-
-    try {
-      const hours = JSON.parse(data);
-      res.json(hours);
-    } catch (parseErr) {
-      console.error('Analyse fehlgeschlagen openingHours.json:', parseErr);
-      res.status(500).json({ error: 'Die Arbeitszeitdatei ist beschädigt' });
-    }
-  });
-});
-// --- حفظ أوقات العمل ---
-app.post('/api/opening-hours', (req, res) => {
-  const { open, close, active } = req.body;
-  const filePath = path.join(__dirname, 'data', 'openingHours.json');
-
-  // التحقق من صحة البيانات
-  if (!open || !close) {
-    return res.status(400).json({ error: 'Öffnungs- und Schließzeiten müssen angegeben werden.' });
+  try {
+    const data = fs.readFileSync(HOURS_FILE, 'utf8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read opening hours' });
   }
+});
 
-  const newHours = { open, close, active };
+// PUT: حفظ أوقات العمل
+app.put('/api/opening-hours', (req, res) => {
+  try {
+    const newSchedule = req.body;
 
-  fs.writeFile(filePath, JSON.stringify(newHours, null, 2), 'utf8', (err) => {
-    if (err) {
-      console.error('Speichern fehlgeschlagen openingHours.json:', err);
-      return res.status(500).json({ error: 'Arbeitsstunden konnten nicht eingespart werden' });
+    // التحقق من الأيام
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    for (let day of days) {
+      if (!newSchedule[day]) {
+        return res.status(400).json({ error: `Missing data for ${day}` });
+      }
     }
-    res.json({ message: 'Arbeitszeit eingespart', openingHours: newHours });
-  });
+
+    fs.writeFileSync(HOURS_FILE, JSON.stringify(newSchedule, null, 2), 'utf8');
+    res.json({ message: 'Updated successfully', schedule: newSchedule });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to write file' });
+  }
 });
 
 
@@ -461,18 +455,25 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: [
         'card',
         'paypal',
+        'sepa_debit',
         'klarna',
         'giropay',
         'eps',
         'p24',           // ❌ ليس 'przelewy24'
         'ideal',
         'alipay',
-        'link'
+        'link',
+        'giropay',
+        'affirm',        // للولايات المتحدة
+        'afterpay_clearpay', // UK
+        'google_pay',
+        'apple_pay'
+        
       ],
       line_items: lineItems,
       mode: 'payment',
-      success_url: 'http://localhost:5173/payment-success?order_id=' + orderId,
-      cancel_url: 'http://localhost:5173/payment-failed',
+      success_url: 'https://www.zaziano.de/payment-success?order_id=' + orderId,
+      cancel_url: 'https://www.zaziano.de/payment-failed',
       customer_email: customerEmail,
       metadata: { order_id: orderId }
     });
