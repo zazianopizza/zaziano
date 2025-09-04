@@ -4,9 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import cors from 'cors';
-import multer from 'multer'; // ← أضف هذه المكتبة
-import bcrypt from 'bcrypt'; // ← نستخدمه لتشفير كلمة المرور
-
+import multer from 'multer'; 
+import bcrypt from 'bcrypt'; 
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
