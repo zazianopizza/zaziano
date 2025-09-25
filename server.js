@@ -470,13 +470,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
         'p24',           // ❌ ليس 'przelewy24'
         'ideal',
         'alipay',
-        'link',
-        'giropay',
-        'affirm',        // للولايات المتحدة
-        'afterpay_clearpay', // UK
-        'google_pay',
-        'apple_pay'
-        
+        'link'// للولايات المتحدة'affirm', 
+        //'afterpay_clearpay'
       ],
       line_items: lineItems,
       mode: 'payment',
@@ -520,6 +515,65 @@ app.get('/api/google-maps-key', (req, res) => {
   res.json({ key: apiKey });
 });
 
+// مسار ملف الإعدادات
+const SETTINGS_FILE = path.join(import.meta.dirname, 'data','settings.json');
+
+// 📁 تحقق من وجود ملف الإعدادات — باستخدام fs.stat
+async function ensureSettingsFile() {
+  try {
+    await fs.promises.stat(SETTINGS_FILE); // ✅ نستخدم fs.promises.stat
+  } catch {
+    const defaultSettings = { deliveryFee: 5.00 };
+    await fs.promises.writeFile(
+      SETTINGS_FILE,
+      JSON.stringify(defaultSettings, null, 2),
+      { encoding: 'utf8' }
+    );
+  }
+}
+
+// 🔍 جلب الإعدادات من الملف
+app.get('/api/settings', async (req, res) => {
+  try {
+    const data = await fs.promises.readFile(SETTINGS_FILE, { encoding: 'utf8' });
+    const settings = JSON.parse(data);
+    res.json(settings);
+  } catch (err) {
+    console.error('❌ Fehler beim Lesen der Einstellungsdatei:', err);
+    res.status(500).json({ error: 'Einstellungen konnten nicht abgerufen werden' });
+  }
+});
+
+// 💾 حفظ الإعدادات في الملف
+app.post('/api/settings', async (req, res) => {
+  const { deliveryFee } = req.body;
+
+  if (typeof deliveryFee !== 'number' || isNaN(deliveryFee)) {
+    return res.status(400).json({ error: 'Bitte geben Sie einen gültigen Preis ein' });
+  }
+
+  try {
+    const data = await fs.promises.readFile(SETTINGS_FILE, { encoding: 'utf8' });
+    const settings = JSON.parse(data);
+    settings.deliveryFee = parseFloat(deliveryFee.toFixed(2));
+
+    await fs.promises.writeFile(
+      SETTINGS_FILE,
+      JSON.stringify(settings, null, 2),
+      { encoding: 'utf8' }
+    );
+
+    res.json({
+      success: true,
+      settings,
+      message: 'Einstellungen erfolgreich gespeichert'
+    });
+  } catch (err) {
+    console.error('❌ Fehler beim Speichern der Einstellungen:', err);
+    res.status(500).json({ error: 'Einstellungen konnten nicht gespeichert werden' });
+  }
+});
+ensureSettingsFile()
 
 // 🔹 أخيرًا: أي مسار غير معالج (وليس API أو data) يُوجَّه إلى index.html
 app.get('*', (req, res) => {
