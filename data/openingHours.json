@@ -1,50 +1,50 @@
 {
   "monday": {
-    "open": true,
-    "openingTime": "09:00",
-    "closingTime": "18:00",
-    "breakStart": "12:00",
-    "breakEnd": "13:00"
+    "open": false,
+    "openingTime": "12:00",
+    "closingTime": "23:59",
+    "breakStart": null,
+    "breakEnd": null
   },
   "tuesday": {
     "open": true,
-    "openingTime": "09:00",
-    "closingTime": "18:00",
+    "openingTime": "11:00",
+    "closingTime": "23:59",
     "breakStart": null,
     "breakEnd": null
   },
   "wednesday": {
-    "open": false,
-    "openingTime": "00:00",
-    "closingTime": "18:00",
+    "open": true,
+    "openingTime": "11:00",
+    "closingTime": "23:59",
     "breakStart": null,
     "breakEnd": null
   },
   "thursday": {
     "open": true,
-    "openingTime": "09:00",
-    "closingTime": "18:00",
-    "breakStart": "12:30",
-    "breakEnd": "13:30"
+    "openingTime": "11:00",
+    "closingTime": "23:59",
+    "breakStart": null,
+    "breakEnd": null
   },
   "friday": {
     "open": true,
-    "openingTime": "09:00",
-    "closingTime": "16:00",
+    "openingTime": "11:00",
+    "closingTime": "00:59",
     "breakStart": null,
     "breakEnd": null
   },
   "saturday": {
     "open": true,
-    "openingTime": "10:02",
-    "closingTime": "01:00",
+    "openingTime": "11:00",
+    "closingTime": "00:59",
     "breakStart": null,
     "breakEnd": null
   },
   "sunday": {
     "open": true,
-    "openingTime": "05:15",
-    "closingTime": "04:25",
+    "openingTime": "11:00",
+    "closingTime": "21:00",
     "breakStart": null,
     "breakEnd": null
   }
