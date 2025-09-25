@@ -14,22 +14,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 11.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 15.9
         }
@@ -243,6 +243,40 @@
               "price": 1
             }
           ],
+          "sauce": [
+            {
+              "id": 537,
+              "name": {
+                "de": "Sauce Hollandiase",
+                "en": "Hollandaise sauce"
+              },
+              "price": 1.5
+            },
+            {
+              "id": 538,
+              "name": {
+                "de": "Curry Sauce",
+                "en": "Curry sauce"
+              },
+              "price": 1.5
+            },
+            {
+              "id": 539,
+              "name": {
+                "de": "Scharfe Sauce",
+                "en": "Hot sauce"
+              },
+              "price": 1.5
+            },
+            {
+              "id": 540,
+              "name": {
+                "de": "BBQ-Sauce",
+                "en": "BBQ sauce"
+              },
+              "price": 1.5
+            }
+          ],
           "dips": [
             {
               "id": 525,
@@ -339,40 +373,6 @@
                 "en": "Mayonnaise"
               },
               "price": 0.5
-            }
-          ],
-          "sauce": [
-            {
-              "id": 537,
-              "name": {
-                "de": "Sauce Hollandiase",
-                "en": "Hollandaise sauce"
-              },
-              "price": 1.5
-            },
-            {
-              "id": 538,
-              "name": {
-                "de": "Curry Sauce",
-                "en": "Curry sauce"
-              },
-              "price": 1.5
-            },
-            {
-              "id": 539,
-              "name": {
-                "de": "Scharfe Sauce",
-                "en": "Hot sauce"
-              },
-              "price": 1.5
-            },
-            {
-              "id": 540,
-              "name": {
-                "de": "BBQ-Sauce",
-                "en": "BBQ sauce"
-              },
-              "price": 1.5
             }
           ]
         },
@@ -583,6 +583,40 @@
               "price": 2
             }
           ],
+          "sauce": [
+            {
+              "id": 587,
+              "name": {
+                "de": "Sauce Hollandiase",
+                "en": "Hollandaise sauce"
+              },
+              "price": 2
+            },
+            {
+              "id": 588,
+              "name": {
+                "de": "Curry Sauce",
+                "en": "Curry sauce"
+              },
+              "price": 2
+            },
+            {
+              "id": 589,
+              "name": {
+                "de": "Scharfe Sauce",
+                "en": "Hot sauce"
+              },
+              "price": 2
+            },
+            {
+              "id": 590,
+              "name": {
+                "de": "BBQ-Sauce",
+                "en": "BBQ sauce"
+              },
+              "price": 2
+            }
+          ],
           "dips": [
             {
               "id": 575,
@@ -679,40 +713,6 @@
                 "en": "Mayonnaise"
               },
               "price": 0.5
-            }
-          ],
-          "sauce": [
-            {
-              "id": 587,
-              "name": {
-                "de": "Sauce Hollandiase",
-                "en": "Hollandaise sauce"
-              },
-              "price": 2
-            },
-            {
-              "id": 588,
-              "name": {
-                "de": "Curry Sauce",
-                "en": "Curry sauce"
-              },
-              "price": 2
-            },
-            {
-              "id": 589,
-              "name": {
-                "de": "Scharfe Sauce",
-                "en": "Hot sauce"
-              },
-              "price": 2
-            },
-            {
-              "id": 590,
-              "name": {
-                "de": "BBQ-Sauce",
-                "en": "BBQ sauce"
-              },
-              "price": 2
             }
           ]
         },
@@ -923,6 +923,40 @@
               "price": 3
             }
           ],
+          "sauce": [
+            {
+              "id": 637,
+              "name": {
+                "de": "Sauce Hollandiase",
+                "en": "Hollandaise sauce"
+              },
+              "price": 3
+            },
+            {
+              "id": 638,
+              "name": {
+                "de": "Curry Sauce",
+                "en": "Curry sauce"
+              },
+              "price": 3
+            },
+            {
+              "id": 639,
+              "name": {
+                "de": "Scharfe Sauce",
+                "en": "Hot sauce"
+              },
+              "price": 3
+            },
+            {
+              "id": 640,
+              "name": {
+                "de": "BBQ-Sauce",
+                "en": "BBQ sauce"
+              },
+              "price": 3
+            }
+          ],
           "dips": [
             {
               "id": 625,
@@ -1020,40 +1054,6 @@
               },
               "price": 0.5
             }
-          ],
-          "sauce": [
-            {
-              "id": 637,
-              "name": {
-                "de": "Sauce Hollandiase",
-                "en": "Hollandaise sauce"
-              },
-              "price": 3
-            },
-            {
-              "id": 638,
-              "name": {
-                "de": "Curry Sauce",
-                "en": "Curry sauce"
-              },
-              "price": 3
-            },
-            {
-              "id": 639,
-              "name": {
-                "de": "Scharfe Sauce",
-                "en": "Hot sauce"
-              },
-              "price": 3
-            },
-            {
-              "id": 640,
-              "name": {
-                "de": "BBQ-Sauce",
-                "en": "BBQ sauce"
-              },
-              "price": 3
-            }
           ]
         }
       }
@@ -1072,22 +1072,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 10.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 13.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 17.5
         }
@@ -2130,22 +2130,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 10.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 13.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 17.5
         }
@@ -3188,22 +3188,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 10.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 13.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 17.5
         }
@@ -4246,22 +4246,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 14.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 19.9
         }
@@ -5304,22 +5304,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 14.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 19.9
         }
@@ -6362,22 +6362,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 14.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 19.9
         }
@@ -7416,26 +7416,26 @@
         "de": "Thunfisch, roten Zwiebeln und Mozzarella - Fior di Latte",
         "en": "Tuna, red onions and mozzarella - Fior di Latte"
       },
-      "image": "/pizza/Gorgonzola.jpg",
+      "image": "/xxl/Tonno.jpg",
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 20.9
         }
@@ -8478,22 +8478,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 20.9
         }
@@ -9536,22 +9536,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 20.9
         }
@@ -10594,22 +10594,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 12.9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 17.5
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 23.5
         }
@@ -11652,22 +11652,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 12.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 22.5
         }
@@ -12710,22 +12710,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 12.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 22.5
         }
@@ -13768,22 +13768,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11.9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 22.5
         }
@@ -14826,22 +14826,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 11.9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 21.5
         }
@@ -15884,22 +15884,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 12.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 16.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 22.5
         }
@@ -16942,22 +16942,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 12.9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 17.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 22.5
         }
@@ -18000,22 +18000,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 13.9
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 18.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 24.9
         }
@@ -19058,22 +19058,22 @@
       "sizes": {
         "small": {
           "label": {
-            "de": "ca26cm",
-            "en": "ca26cm"
+            "de": "Ca. 26 cm",
+            "en": "Ca. 26 cm"
           },
           "price": 10.5
         },
         "medium": {
           "label": {
-            "de": "ca32cm",
-            "en": "ca32cm"
+            "de": "Ca. 32 cm",
+            "en": "Ca. 32 cm"
           },
           "price": 13.9
         },
         "large": {
           "label": {
-            "de": "ca38cm",
-            "en": "ca38cm"
+            "de": "Ca. 38 cm",
+            "en": "Ca. 38 cm"
           },
           "price": 17.9
         }
@@ -20118,8 +20118,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 10.9
         }
@@ -20139,8 +20139,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 11.5
         }
@@ -20160,8 +20160,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 9.5
         }
@@ -20181,8 +20181,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 9.5
         }
@@ -20202,8 +20202,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 11.5
         }
@@ -20223,8 +20223,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 11.9
         }
@@ -20244,8 +20244,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 12.9
         }
@@ -20265,8 +20265,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "Pasta",
-            "en": "Pasta"
+            "de": "",
+            "en": ""
           },
           "price": 12.5
         }
@@ -20288,8 +20288,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 8
         }
@@ -20478,8 +20478,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 8.9
         }
@@ -20668,8 +20668,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 9.9
         }
@@ -20858,8 +20858,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 12.9
         }
@@ -21048,8 +21048,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 11.9
         }
@@ -21238,8 +21238,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 9.5
         }
@@ -21428,8 +21428,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "burger",
-            "en": "burger"
+            "de": "",
+            "en": ""
           },
           "price": 9.5
         }
@@ -23072,7 +23072,7 @@
         "de": "Thunfisch, roten Zwiebeln und Mozzarella Fior di Latte",
         "en": "Tuna, red onions and mozzarella Fior di Latte"
       },
-      "image": "/xxl/Tonno.jpg",
+      "image": "/xxl/PIZZATONNO.png",
       "sizes": {
         "large": {
           "label": {
@@ -23806,8 +23806,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "PIZZ",
-            "en": "PIZZ"
+            "de": "",
+            "en": ""
           },
           "price": 7.5
         }
@@ -23982,8 +23982,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "calzone",
-            "en": "calzone"
+            "de": "",
+            "en": ""
           },
           "price": 14.9
         }
@@ -24346,8 +24346,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "calzone",
-            "en": "calzone"
+            "de": "",
+            "en": ""
           },
           "price": 14.9
         }
@@ -24710,8 +24710,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "calzone",
-            "en": "calzone"
+            "de": "",
+            "en": ""
           },
           "price": 15.9
         }
@@ -28264,8 +28264,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 13.9
         }
@@ -28285,8 +28285,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28306,8 +28306,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28327,8 +28327,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 12.9
         }
@@ -28348,8 +28348,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 13.9
         }
@@ -28369,8 +28369,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28390,8 +28390,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "haehnchen",
-            "en": "haehnchen"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28413,8 +28413,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "salate",
-            "en": "salate"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28434,8 +28434,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "salate",
-            "en": "salate"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28455,8 +28455,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "salate",
-            "en": "salate"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28476,8 +28476,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "salate",
-            "en": "salate"
+            "de": "",
+            "en": ""
           },
           "price": 14.5
         }
@@ -28620,8 +28620,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 1.6
         }
@@ -28641,8 +28641,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 1.6
         }
@@ -28662,8 +28662,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 1.6
         }
@@ -28683,8 +28683,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 1.6
         }
@@ -28704,8 +28704,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 1.6
         }
@@ -28725,8 +28725,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 0.5
         }
@@ -28746,8 +28746,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 0.5
         }
@@ -28769,8 +28769,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 9.5
         }
@@ -28790,8 +28790,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 3.5
         }
@@ -28811,8 +28811,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 3.5
         }
@@ -28832,8 +28832,8 @@
       "sizes": {
         "large": {
           "label": {
-            "de": "dips",
-            "en": "dips"
+            "de": "",
+            "en": ""
           },
           "price": 3.9
         }
