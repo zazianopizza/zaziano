@@ -6,12 +6,16 @@ import fs from 'fs';
 import cors from 'cors';
 import multer from 'multer'; // ← أضف هذه المكتبة
 import bcrypt from 'bcrypt'; // ← نستخدمه لتشفير كلمة المرور
+import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { dirname, resolve } from 'path';
-
+import Product from './models/Product.js';
+import OpeningHours from './models/OpeningHours.js';
+import Settings from './models/Settings.js';
+import Order from './models/Order.js';
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -109,29 +113,194 @@ app.post('/api/upload-image', upload.single('image'), (req, res) => {
   res.json({ filePath });
 });
 
-// --- حفظ بيانات المنتجات ---
-app.post('/api/products', (req, res) => {
-  const newData = req.body;
-  const filePath = path.join(__dirname, 'data', 'products.json');
-  fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8', (err) => {
-    if (err) {
-      console.error('Das Schreiben der Datei ist fehlgeschlagen:', err);
-      return res.status(500).json({ error: 'Daten konnten nicht gespeichert werden' });
+// --- جلب جميع المنتجات ---
+// --- جلب البيانات ---
+app.get('/api/products', async (req, res) => {
+  try {
+    // ✅ جلب المنتجات مرتبة حسب sectionOrder → order → id
+    const products = await Product.find().sort({ sectionOrder: 1, order: 1, id: 1 });
+
+    const result = {};
+
+    for (const doc of products) {
+      if (!doc.data || typeof doc.data !== 'string') {
+        console.warn(`⚠️ وثيقة بدون بيانات صالحة: ${doc._id} | section: ${doc.section}`);
+        continue;
+      }
+
+      let data;
+      try {
+        data = JSON.parse(doc.data);
+      } catch (parseErr) {
+        console.error(`❌ فشل في تحليل JSON للوثيقة ${doc._id}:`, parseErr);
+        continue;
+      }
+
+      const section = doc.section;
+
+      if (!result[section]) {
+        result[section] = [];
+      }
+
+      result[section].push(data);
     }
-    res.json({ message: 'Erfolgreich gespeichert' });
-  });
+
+    // ✅ إعادة ترتيب الأقسام حسب sectionOrder (المخزن في قاعدة البيانات)
+    // نستخرج الأقسام الفريدة مع ترتيبها
+    const uniqueSections = [...new Set(products.map(p => p.section))];
+    const orderedSections = uniqueSections.sort((a, b) => {
+      const aDoc = products.find(p => p.section === a);
+      const bDoc = products.find(p => p.section === b);
+      return (aDoc?.sectionOrder || 99) - (bDoc?.sectionOrder || 99);
+    });
+
+    // ✅ بناء النتيجة النهائية بترتيب الأقسام
+    const orderedResult = {};
+    orderedSections.forEach(section => {
+      if (result[section]) {
+        orderedResult[section] = result[section];
+      }
+    });
+
+    console.log('✅ تم جلب المنتجات بنجاح');
+    res.json(orderedResult);
+
+  } catch (err) {
+    console.error('❌ خطأ في جلب المنتجات:', err);
+    res.status(500).json({ error: 'فشل في جلب المنتجات', details: err.message });
+  }
+});
+// --- حفظ المنتج الجديد ---
+// --- حفظ المنتج الجديد ---
+app.post('/api/products', async (req, res) => {
+  try {
+    const newData = req.body;
+
+    if (!newData || typeof newData !== 'object') {
+      return res.status(400).json({ error: 'بيانات غير صالحة — يجب أن يكون كائنًا' });
+    }
+
+    // ✅ التحقق من أن كل قسم يحتوي على مصفوفة
+    for (const section of Object.keys(newData)) {
+      if (!Array.isArray(newData[section])) {
+        return res.status(400).json({
+          error: `القسم "${section}" يجب أن يكون مصفوفة`
+        });
+      }
+    }
+
+    const results = {
+      created: 0,
+      updated: 0,
+      errors: []
+    };
+
+    // ✅ تحديد ترتيب الأقسام ديناميكيًا بناءً على ترتيبها في newData
+    const sections = Object.keys(newData);
+    const sectionOrderMap = {};
+    sections.forEach((section, index) => {
+      sectionOrderMap[section] = index; // ← أول قسم = 0، ثاني قسم = 1، وهكذا
+    });
+
+    for (const section of sections) {
+      const sectionOrder = sectionOrderMap[section];
+
+      for (const product of newData[section]) {
+        if (!product.id || typeof product.id !== 'number') {
+          results.errors.push(`منتج في القسم "${section}" بدون id رقمي`);
+          continue;
+        }
+
+        let dataString;
+        try {
+          dataString = JSON.stringify(product);
+        } catch (err) {
+          results.errors.push(`فشل في تحويل المنتج ${product.id} في القسم ${section} إلى JSON`);
+          continue;
+        }
+
+        const filter = { section, id: product.id };
+        const updateData = {
+          $set: {
+            data: dataString,
+            order: product.order || 0,
+            sectionOrder: sectionOrder, // ← ترتيب القسم ديناميكيًا!
+            updatedAt: new Date()
+          }
+        };
+
+        const options = { upsert: true, new: true };
+
+        try {
+          const dbProduct = await Product.findOneAndUpdate(filter, updateData, options);
+
+          if (dbProduct.isNew) {
+            results.created++;
+          } else {
+            results.updated++;
+          }
+
+        } catch (err) {
+          results.errors.push(`فشل في حفظ المنتج ${product.id} في القسم ${section}: ${err.message}`);
+        }
+      }
+    }
+
+    console.log(`✅ تم الحفظ: ${results.created} جديد، ${results.updated} محدث، ${results.errors.length} خطأ`);
+
+    res.json({
+      message: 'تم حفظ المنتجات بنجاح',
+      stats: results
+    });
+
+  } catch (err) {
+    console.error('❌ خطأ في حفظ المنتجات:', err);
+    res.status(500).json({
+      error: 'فشل في حفظ المنتجات',
+      details: err.message
+    });
+  }
 });
 
-// --- تحميل البيانات ---
-app.get('/api/products', (req, res) => {
-  const filePath = path.join(__dirname, 'data', 'products.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Lesen der Datei fehlgeschlagen:', err);
-      return res.status(500).json({ error: 'Das Laden der Daten ist fehlgeschlagen' });
+// --- حذف منتج ---
+app.delete('/api/products/:section/:id', async (req, res) => {
+  try {
+    const { section, id } = req.params;
+
+    // ✅ التحقق من المدخلات
+    if (!section || typeof section !== 'string') {
+      return res.status(400).json({ error: 'حقل "section" مطلوب وينبغي أن يكون نصًا' });
     }
-    res.json(JSON.parse(data));
-  });
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ error: 'حقل "id" مطلوب وينبغي أن يكون رقمًا' });
+    }
+
+    const productId = parseInt(id);
+
+    // ✅ البحث عن المنتج وحذفه
+    const result = await Product.deleteOne({ section, id: productId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        error: `لم يتم العثور على منتج بالقسم "${section}" والرقم "${productId}"`
+      });
+    }
+
+    console.log(`✅ تم حذف المنتج: ID=${productId} | Section=${section}`);
+
+    res.json({
+      message: 'تم حذف المنتج بنجاح',
+      deletedCount: result.deletedCount
+    });
+
+  } catch (err) {
+    console.error('❌ خطأ في حذف المنتج:', err);
+    res.status(500).json({
+      error: 'فشل في حذف المنتج',
+      details: err.message
+    });
+  }
 });
 
 
@@ -212,89 +381,104 @@ app.post('/api/forward-to-liefersoft', async (req, res) => {
   }
 });
 
-// --- حفظ طلب جديد (من واجهة المستخدم) ---
-app.post('/api/orders', (req, res) => {
-  const newOrder = { ...req.body, id: Date.now(), createdAt: new Date().toISOString(), status: 'pending' };
-  const filePath = path.join(__dirname, 'data', 'orders.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Anfragen konnten nicht gelesen werden' });
-    const orders = JSON.parse(data);
-    orders.push(newOrder);
-    fs.writeFile(filePath, JSON.stringify(orders, null, 2), 'utf8', (err) => {
-      if (err) return res.status(500).json({ error: 'Anfrage konnte nicht gespeichert werden' });
-      res.json({ message: 'Anfrage gespeichert', order: newOrder });
+// POST: إنشاء طلب جديد
+app.post('/api/orders', async (req, res) => {
+  try {
+    const newOrderData = req.body;
+
+    // ✅ التحقق من أن البيانات موجودة
+    if (!newOrderData.customer || !newOrderData.items || !newOrderData.totalPrice) {
+      return res.status(400).json({ error: 'بيانات الطلب غير كاملة' });
+    }
+
+    // ✅ إنشاء ID جديد
+    const orderId = Date.now();
+
+    // ✅ إنشاء الطلب
+    const newOrder = new Order({
+      ...newOrderData,
+      id: orderId,
+      createdAt: new Date(),
+      status: 'pending'
     });
-  });
+
+    // ✅ حفظ الطلب
+    await newOrder.save();
+
+    console.log(`✅ تم إنشاء الطلب: ID=${orderId}`);
+    res.json({ message: 'Anfrage gespeichert', order: newOrder });
+
+  } catch (err) {
+    console.error('❌ خطأ في إنشاء الطلب:', err);
+    res.status(500).json({ error: 'Anfrage konnte nicht gespeichert werden' });
+  }
 });
 
-// --- تحميل جميع الطلبات ---
-app.get('/api/orders', (req, res) => {
-  const filePath = path.join(__dirname, 'data', 'orders.json');
+// GET: جلب جميع الطلبات
+app.get('/api/orders', async (req, res) => {
+  try {
+    // ✅ جلب جميع الطلبات مرتبة حسب التاريخ (الأحدث أولًا)
+    const orders = await Order.find().sort({ createdAt: -1 });
 
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err || !data || data.trim() === '') {
-      console.warn('Anwendungsdatei ist nicht verfügbar oder leer');
-      return res.json([]);
-    }
+    res.json(orders);
 
-    try {
-      res.json(JSON.parse(data));
-    } catch (err) {
-      console.error('Die Datei orders.json ist beschädigt:', err);
-      res.json([]);
-    }
-  });
+  } catch (err) {
+    console.error('❌ خطأ في جلب الطلبات:', err);
+    res.status(500).json({ error: 'Anfragen konnten nicht gelesen werden' });
+  }
 });
 
-// --- تحديث حالة الطلب ---
-app.put('/api/orders/:id', (req, res) => {
+// PUT: تحديث حالة الطلب
+app.put('/api/orders/:id', async (req, res) => {
   const orderId = parseInt(req.params.id);
   const { status } = req.body;
-  const filePath = path.join(__dirname, 'data', 'orders.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Anfragen konnten nicht gelesen werden' });
-    const orders = JSON.parse(data);
-    const order = orders.find(o => o.id === orderId);
-    if (!order) return res.status(404).json({ error: 'Anfrage nicht gefunden' });
-    order.status = status;
-    fs.writeFile(filePath, JSON.stringify(orders, null, 2), 'utf8', (err) => {
-      if (err) return res.status(500).json({ error: 'Statusaktualisierung fehlgeschlagen' });
-      res.json({ message: 'Aktualisiert', order });
-    });
-  });
-});
-// --- حذف طلب ---
-app.delete('/api/orders/:id', (req, res) => {
-  const orderId = parseInt(req.params.id);
-  const filePath = path.join(__dirname, 'data', 'orders.json');
 
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Fehler beim Lesen der Anforderungsdatei:', err);
-      return res.status(500).json({ error: 'Anfragen konnten nicht gelesen werden' });
-    }
+  // ✅ التحقق من أن الحالة صالحة
+  const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'حالة غير صالحة' });
+  }
 
-    let orders = JSON.parse(data);
-    const orderIndex = orders.findIndex(o => o.id === orderId);
+  try {
+    // ✅ البحث عن الطلب وتحديثه
+    const order = await Order.findOneAndUpdate(
+      { id: orderId },
+      { $set: { status } },
+      { new: true } // ← لإعادة الطلب بعد التحديث
+    );
 
-    if (orderIndex === -1) {
+    if (!order) {
       return res.status(404).json({ error: 'Anfrage nicht gefunden' });
     }
 
-    // حذف الطلب
-    orders.splice(orderIndex, 1);
+    console.log(`✅ تم تحديث حالة الطلب: ID=${orderId} → ${status}`);
+    res.json({ message: 'Aktualisiert', order });
 
-    // حفظه في الملف
-    fs.writeFile(filePath, JSON.stringify(orders, null, 2), 'utf8', (err) => {
-      if (err) {
-        console.error('Datei konnte nach dem Löschen nicht gespeichert werden:', err);
-        return res.status(500).json({ error: 'Änderungen konnten nicht gespeichert werden' });
-      }
-      res.json({ message: 'Die Anfrage wurde erfolgreich gelöscht' });
-    });
-  });
+  } catch (err) {
+    console.error('❌ خطأ في تحديث حالة الطلب:', err);
+    res.status(500).json({ error: 'Statusaktualisierung fehlgeschlagen' });
+  }
 });
+// DELETE: حذف طلب
+app.delete('/api/orders/:id', async (req, res) => {
+  const orderId = parseInt(req.params.id);
 
+  try {
+    // ✅ البحث عن الطلب وحذفه
+    const result = await Order.deleteOne({ id: orderId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Anfrage nicht gefunden' });
+    }
+
+    console.log(`✅ تم حذف الطلب: ID=${orderId}`);
+    res.json({ message: 'Die Anfrage wurde erfolgreich gelöscht' });
+
+  } catch (err) {
+    console.error('❌ خطأ في حذف الطلب:', err);
+    res.status(500).json({ error: 'Änderungen konnten nicht gespeichert werden' });
+  }
+});
 // --- 2. مسار جديد: إرسال بريد التأكيد (send-order-email) ---
 
 
@@ -369,38 +553,73 @@ app.post('/api/send-order-email', async (req, res) => {
 });
 
 // --- تحميل أوقات العمل ---
-const HOURS_FILE = path.join(__dirname, 'data','openingHours.json');
-
-// GET: جلب أوقات العمل
-app.get('/api/opening-hours', (req, res) => {
+app.get('/api/opening-hours', async (req, res) => {
   try {
-    const data = fs.readFileSync(HOURS_FILE, 'utf8');
-    res.json(JSON.parse(data));
+    // ✅ البحث عن السجل الوحيد
+    let hours = await OpeningHours.findOne();
+
+    // ✅ إذا لم يكن موجودًا، أنشئه بالقيم الافتراضية
+    if (!hours) {
+      hours = new OpeningHours();
+      await hours.save();
+    }
+
+    res.json(hours.schedule);
+
   } catch (err) {
+    console.error('❌ خطأ في جلب أوقات العمل:', err);
     res.status(500).json({ error: 'Failed to read opening hours' });
   }
 });
 
 // PUT: حفظ أوقات العمل
-app.put('/api/opening-hours', (req, res) => {
+app.put('/api/opening-hours', async (req, res) => {
   try {
     const newSchedule = req.body;
 
-    // التحقق من الأيام
+    // ✅ التحقق من أن newSchedule كائن
+    if (!newSchedule || typeof newSchedule !== 'object') {
+      return res.status(400).json({ error: 'بيانات غير صالحة — يجب أن يكون كائنًا' });
+    }
+
+    // ✅ التحقق من أيام الأسبوع
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     for (let day of days) {
       if (!newSchedule[day]) {
         return res.status(400).json({ error: `Missing data for ${day}` });
       }
+
+      // ✅ التحقق من أن كل يوم يحتوي على الحقول المطلوبة
+      const dayData = newSchedule[day];
+      if (
+        typeof dayData.open !== 'boolean' ||
+        typeof dayData.openingTime !== 'string' ||
+        typeof dayData.closingTime !== 'string' ||
+        (dayData.breakStart !== null && typeof dayData.breakStart !== 'string') ||
+        (dayData.breakEnd !== null && typeof dayData.breakEnd !== 'string')
+      ) {
+        return res.status(400).json({ error: `Invalid format for ${day}` });
+      }
     }
 
-    fs.writeFileSync(HOURS_FILE, JSON.stringify(newSchedule, null, 2), 'utf8');
-    res.json({ message: 'Updated successfully', schedule: newSchedule });
+    // ✅ البحث عن السجل أو إنشاؤه
+    let hours = await OpeningHours.findOne();
+    if (!hours) {
+      hours = new OpeningHours();
+    }
+
+    // ✅ تحديث الجدول
+    hours.schedule = newSchedule;
+    await hours.save();
+
+    console.log('✅ تم تحديث أوقات العمل بنجاح');
+    res.json({ message: 'Updated successfully', schedule: hours.schedule });
+
   } catch (err) {
-    res.status(500).json({ error: 'Failed to write file' });
+    console.error('❌ خطأ في حفظ أوقات العمل:', err);
+    res.status(500).json({ error: 'Failed to write to database' });
   }
 });
-
 
 
 // --- إنشاء جلسة دفع ---
@@ -515,74 +734,77 @@ app.get('/api/google-maps-key', (req, res) => {
   res.json({ key: apiKey });
 });
 
-// مسار ملف الإعدادات
-const SETTINGS_FILE = path.join(import.meta.dirname, 'data','settings.json');
-
-// 📁 تحقق من وجود ملف الإعدادات — باستخدام fs.stat
-async function ensureSettingsFile() {
-  try {
-    await fs.promises.stat(SETTINGS_FILE); // ✅ نستخدم fs.promises.stat
-  } catch {
-    const defaultSettings = { deliveryFee: 5.00 };
-    await fs.promises.writeFile(
-      SETTINGS_FILE,
-      JSON.stringify(defaultSettings, null, 2),
-      { encoding: 'utf8' }
-    );
-  }
-}
-
-// 🔍 جلب الإعدادات من الملف
+// GET: جلب الإعدادات
 app.get('/api/settings', async (req, res) => {
   try {
-    const data = await fs.promises.readFile(SETTINGS_FILE, { encoding: 'utf8' });
-    const settings = JSON.parse(data);
-    res.json(settings);
+    // ✅ البحث عن السجل الوحيد
+    let settings = await Settings.findOne();
+
+    // ✅ إذا لم يكن موجودًا، أنشئه بالقيمة الافتراضية
+    if (!settings) {
+      settings = new Settings();
+      await settings.save();
+    }
+
+    res.json({
+      deliveryFee: settings.deliveryFee
+    });
+
   } catch (err) {
-    console.error('❌ Fehler beim Lesen der Einstellungsdatei:', err);
+    console.error('❌ خطأ في جلب الإعدادات:', err);
     res.status(500).json({ error: 'Einstellungen konnten nicht abgerufen werden' });
   }
 });
-
-// 💾 حفظ الإعدادات في الملف
+// POST: حفظ الإعدادات
 app.post('/api/settings', async (req, res) => {
   const { deliveryFee } = req.body;
 
+  // ✅ التحقق من أن deliveryFee رقم صالح
   if (typeof deliveryFee !== 'number' || isNaN(deliveryFee)) {
     return res.status(400).json({ error: 'Bitte geben Sie einen gültigen Preis ein' });
   }
 
   try {
-    const data = await fs.promises.readFile(SETTINGS_FILE, { encoding: 'utf8' });
-    const settings = JSON.parse(data);
+    // ✅ البحث عن السجل أو إنشاؤه
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = new Settings();
+    }
+
+    // ✅ تحديث السعر
     settings.deliveryFee = parseFloat(deliveryFee.toFixed(2));
+    await settings.save();
 
-    await fs.promises.writeFile(
-      SETTINGS_FILE,
-      JSON.stringify(settings, null, 2),
-      { encoding: 'utf8' }
-    );
-
+    console.log('✅ تم تحديث سعر التوصيل بنجاح:', settings.deliveryFee);
     res.json({
       success: true,
-      settings,
+      settings: {
+        deliveryFee: settings.deliveryFee
+      },
       message: 'Einstellungen erfolgreich gespeichert'
     });
+
   } catch (err) {
-    console.error('❌ Fehler beim Speichern der Einstellungen:', err);
+    console.error('❌ خطأ في حفظ الإعدادات:', err);
     res.status(500).json({ error: 'Einstellungen konnten nicht gespeichert werden' });
   }
 });
-ensureSettingsFile()
 
 // 🔹 أخيرًا: أي مسار غير معالج (وليس API أو data) يُوجَّه إلى index.html
 app.get('*', (req, res) => {
-  // منع الوصول إلى /data/*
   if (req.path.startsWith('/data')) {
     return res.status(403).send('الوصول ممنوع');
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// اتصال بقاعدة البيانات
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB متصل'))
+.catch(err => console.error('❌ خطأ في الاتصال بـ MongoDB:', err));
 
 app.listen(PORT, () => {
   console.log(`✅ Der Server arbeitet an http://localhost:${PORT}`);
