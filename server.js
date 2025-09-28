@@ -624,7 +624,7 @@ app.put('/api/opening-hours', async (req, res) => {
 
 // --- إنشاء جلسة دفع ---
 app.post('/api/create-checkout-session', async (req, res) => {
-  const { items, customerEmail, orderId, deliveryType } = req.body;
+  const { items, customerEmail, orderId, deliveryType,deliveryFee } = req.body;
 
   try {
     let lineItems = items.flatMap(item => {
@@ -672,7 +672,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
             name: 'Lieferung',
             description: 'für die Lieferung'
           },
-          unit_amount: 500 // 5.00 € بالسنتات
+          unit_amount: Math.round(deliveryFee * 100) // ⚠️ التحويل إلى سنتات
         },
         quantity: 1
       });
