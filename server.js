@@ -304,7 +304,6 @@ app.delete('/api/products/:section/:id', async (req, res) => {
 });
 
 
-// server.js (Node.js + Express)
 app.post('/api/forward-to-liefersoft', async (req, res) => {
   try {
     const orderPayload = req.body;
@@ -380,6 +379,7 @@ app.post('/api/forward-to-liefersoft', async (req, res) => {
     });
   }
 });
+
 
 // POST: إنشاء طلب جديد
 app.post('/api/orders', async (req, res) => {
@@ -505,7 +505,7 @@ app.post('/api/send-order-email', async (req, res) => {
             <p><strong>Bestellnummer:</strong> ${orderId}</p>
             <p><strong>Datum:</strong> ${new Date().toLocaleDateString('de-DE')}</p>
             <p><strong>Lieferart:</strong> ${orderData.delivery.type === 'delivery' ? 'Lieferung' : 'Abholung'}</p>
-            ${orderData.delivery.preorderTime ? `<p><strong>Bestellzeit:</strong> ${orderData.delivery.preorderTime}</p>` : ''}
+            ${orderData.delivery.preorderTime ? `<p><strong>Bestellzeit:</strong> ${orderData.delivery.preorderTime}</p>` : `${orderData.delivery.pickupTime}`}
             <p><strong>Zahlungsart:</strong> ${orderData.payment.method === 'cash' ? 'Bar bei Lieferung' : 'Karte'}</p>
           </div>
 
@@ -628,13 +628,16 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
   try {
     let lineItems = items.flatMap(item => {
+       const description = item.sizeLabel && item.sizeLabel.trim() !== '' 
+      ? item.sizeLabel 
+      : 'Keine Größe';
       const productItems = [
         {
           price_data: {
             currency: 'eur',
             product_data: {
               name: item.name,
-              description: item.sizeLabel
+              ...(description && { description })
             },
             unit_amount: Math.round(item.basePrice * 100)
           },
@@ -694,8 +697,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       ],
       line_items: lineItems,
       mode: 'payment',
-      success_url: 'https://www.zaziano.de/payment-success?order_id=' + orderId,
-      cancel_url: 'https://www.zaziano.de/payment-failed',
+      success_url: `http://localhost:5173/payment-success?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: 'http://localhost:5173/payment-failed',
       customer_email: customerEmail,
       metadata: { order_id: orderId }
     });
@@ -710,15 +713,12 @@ app.post('/api/create-checkout-session', async (req, res) => {
 // --- التحقق من الدفع ---
 app.get('/api/checkout-session', async (req, res) => {
   const { session_id } = req.query;
+  if (!session_id) return res.status(400).json({ error: 'Missing session_id' });
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
-    res.json({
-      payment_status: session.payment_status,
-      customer_email: session.customer_details.email,
-      metadata: session.metadata
-    });
+    res.json(session);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 
