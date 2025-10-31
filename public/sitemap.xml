@@ -1,1 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
+  <!-- الصفحة الرئيسية: تعرض الأقسام -->
+  <url>
+    <loc>https://www.zaziano.de/</loc>
+    <lastmod>2025-10-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- صفحة المنتجات: تحتوي على جميع المنتجات (مهمة جدًا للفهرسة) -->
+  <url>
+    <loc>https://www.zaziano.de/products</loc>
+    <lastmod>2025-10-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- صفحة الإمبريسوم (مطلوبة قانونيًا في ألمانيا) -->
+  <url>
+    <loc>https://www.zaziano.de/impressum</loc>
+    <lastmod>2025-10-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- صفحة سياسة الخصوصية -->
+  <url>
+    <loc>https://www.zaziano.de/privacy</loc>
+    <lastmod>2025-10-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- صفحة الشروط والأحكام (AGB) -->
+  <url>
+    <loc>https://www.zaziano.de/agb</loc>
+    <lastmod>2025-10-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>
