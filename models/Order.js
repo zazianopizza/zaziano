@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
   id: {
-    type: Number, // ← سنستخدم Date.now() كـ ID — لكنه رقم
+    type: Number,
     required: true,
     index: true
   },
@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
     city: { type: String }
   },
   delivery: {
-    type: { type: String }, // "delivery" أو "pickup"
+    type: { type: String },
     notes: { type: String },
     pickupTimeOption: { type: String },
     pickupTime: { type: String },
@@ -56,12 +56,17 @@ const orderSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+
+  // 👇 حقول Stripe الجديدة
+  stripeSessionId: { type: String },
+  stripePaymentIntentId: { type: String },
+  stripeRefundId: { type: String },
+  refundedAt: { type: Date }
 }, {
   timestamps: false
 });
 
-// ✅ فهرس فريد على id (لأننا نستخدمه كمعرف)
 orderSchema.index({ id: 1 }, { unique: true });
 
 export default mongoose.model('Order', orderSchema);
