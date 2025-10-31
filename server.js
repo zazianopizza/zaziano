@@ -480,8 +480,6 @@ app.delete('/api/orders/:id', async (req, res) => {
   }
 });
 // --- 2. مسار جديد: إرسال بريد التأكيد (send-order-email) ---
-
-
 app.post('/api/send-order-email', async (req, res) => {
   const { orderData, orderId } = req.body;
 
@@ -490,52 +488,74 @@ app.post('/api/send-order-email', async (req, res) => {
   }
 
   try {
+    // استخراج الاسم الأول والأخير من اسم العميل المدمج (إذا أردت عرضه)
+    const customerNameParts = (orderData.customer.name || '').split(' ');
+    const firstName = customerNameParts[0] || '';
+    const lastName = customerNameParts.slice(1).join(' ') || '';
+
+    // تحديد نوع التوصيل
+    const isDelivery = orderData.orderType === 'DELIVERY';
+
+    // حساب المجموع الجزئي (من العناصر فقط)
+    const subtotal = orderData.items.reduce((sum, item) => {
+      return sum + (item.price * item.quantity);
+    }, 0);
+
+    // تكلفة التوصيل
+    const deliveryCost = orderData.deliveryCost?.cost || 0;
+
+    // وقت الطلب
+    const orderTime = new Date(orderData.preOrder).toLocaleString('de-DE');
+
     const { data, error } = await resend.emails.send({
-      from: 'Zaziano Restaurant <info@zaziano.de>', // ← يمكنك تغييره لاحقًا
+      from: 'Zaziano Restaurant <info@zaziano.de>',
       to: [orderData.customer.email],
       subject: `Bestellbestätigung #${orderId} - Zaziano Restaurant`,
       html: `
-        <div style="direction: ltr; text-align: left; padding: 20px; background: #f9f9f9;">
+        <div style="direction: ltr; text-align: left; padding: 20px; background: #f9f9f9; font-family: Arial, sans-serif;">
           <h2 style="color: #096332;">Vielen Dank für Ihre Bestellung!</h2>
-          <p>Lieber ${orderData.customer.firstName} ${orderData.customer.lastName || ''},</p>
+          <p>Lieber ${firstName} ${lastName},</p>
           <p>vielen Dank für Ihre Bestellung bei uns. Hier sind die Details:</p>
 
           <div style="margin: 20px 0; padding: 15px; background: #ffffff; border: 1px solid #ddd; border-radius: 8px;">
             <h3>📦 Bestellinformationen</h3>
             <p><strong>Bestellnummer:</strong> ${orderId}</p>
-            <p><strong>Datum:</strong> ${new Date().toLocaleDateString('de-DE')}</p>
-            <p><strong>Lieferart:</strong> ${orderData.delivery.type === 'delivery' ? 'Lieferung' : 'Abholung'}</p>
-            ${orderData.delivery.preorderTime ? `<p><strong>Bestellzeit:</strong> ${orderData.delivery.preorderTime}</p>` : `${orderData.delivery.pickupTime}`}
-            <p><strong>Zahlungsart:</strong> ${orderData.payment.method === 'cash' ? 'Bar bei Lieferung' : 'Karte'}</p>
+            <p><strong>Datum & Uhrzeit:</strong> ${orderTime}</p>
+            <p><strong>Lieferart:</strong> ${isDelivery ? 'Lieferung' : 'Abholung'}</p>
+            <p><strong>Zahlungsart:</strong> ${orderData.paymentMethod === 'CASH' ? 'Bar bei Lieferung/Abholung' : 'Online (Karte)'}</p>
+            ${orderData.customer.remark ? `<p><strong>Anmerkung:</strong> ${orderData.customer.remark}</p>` : ''}
           </div>
 
           <h3>📋 Bestellte Artikel</h3>
           <ul style="list-style: none; padding: 0;">
             ${orderData.items.map(item => `
-              <li style="margin-bottom: 10px;">
+              <li style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #eee;">
                 <strong>${item.quantity} × ${item.name}</strong>
-                ${item.sizeLabel ? `(${item.sizeLabel})` : ''}
+                ${item.itemCode ? ` (${item.itemCode})` : ''}
                 <br/>
-                Preis: ${item.totalPrice.toFixed(2)} €
-                ${item.extras.length > 0 ? `
-                  <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
-                    <strong>Zusatz:</strong>
-                    ${item.extras.map(ex => `${ex.quantity} × ${ex.name} (${(ex.price * ex.quantity).toFixed(2)} €)`).join(', ')}
+                Preis: ${(item.price * item.quantity).toFixed(2)} €
+                ${item.remark ? `
+                  <div style="margin-top: 6px; font-size: 0.9em; color: #555;">
+                    <strong>Zusatz:</strong> ${item.remark}
                   </div>
                 ` : ''}
               </li>
             `).join('')}
           </ul>
 
-          <div style="margin-top: 20px; font-size: 1.1em;">
-            <p><strong>Zwischensumme:</strong> ${orderData.subtotal.toFixed(2)} €</p>
-            <p><strong>Lieferkosten:</strong> ${orderData.deliveryFee.toFixed(2)} €</p>
-            <p><strong>Gesamtsumme:</strong> ${orderData.totalPrice.toFixed(2)} €</p>
+          <div style="margin-top: 20px; font-size: 1.1em; background: #f0f8f0; padding: 12px; border-radius: 6px;">
+            <p><strong>Zwischensumme:</strong> ${subtotal.toFixed(2)} €</p>
+            <p><strong>Lieferkosten:</strong> ${deliveryCost.toFixed(2)} €</p>
+            <p style="font-weight: bold; color: #096332;"><strong>Gesamtsumme:</strong> ${orderData.totalPrice.toFixed(2)} €</p>
           </div>
 
-          <hr style="margin: 20px 0; border: 1px solid #eee;" />
-          <p style="color: #777;">Wir freuen uns auf Ihre Bestellung. Bei Fragen erreichen Sie uns jederzeit.</p>
-          <p><strong>Zaziano Restaurant</strong><br/><strong>Telefon:</strong><a href="tel:+4917660366606">+4917660366606</a><strong>Mail:</strong> <a href="mailto:info@zaziano.de">info@zaziano.de</a></p>
+          <hr style="margin: 25px 0; border: 1px solid #eee;" />
+          <p style="color: #777;">Wir bereiten Ihre Bestellung sorgfältig zu und liefern sie pünktlich.</p>
+          <p>
+            <strong>Zaziano Restaurant</strong><br/>
+            <strong>Telefon:</strong> <a href="tel:+4917660366606" style="color: #096332; text-decoration: none;">+49 176 60366606</a><br/>
+            <strong>E-Mail:</strong> <a href="mailto:info@zaziano.de" style="color: #096332; text-decoration: none;">info@zaziano.de</a>
+          </p>
         </div>
       `
     });
@@ -547,7 +567,70 @@ app.post('/api/send-order-email', async (req, res) => {
 
     return res.status(200).json({ message: 'E-Mail erfolgreich gesendet', data });
   } catch (err) {
-    console.error('Serverfehler:', err);
+    console.error('Serverfehler beim Senden der E-Mail:', err);
+    return res.status(500).json({ error: 'E-Mail konnte nicht gesendet werden.' });
+  }
+});
+
+app.post('/api/send-cancellation-email', async (req, res) => {
+  const { orderData, orderId, refunded } = req.body;
+
+  if (!orderData || !orderData.customer?.email) {
+    return res.status(400).json({ error: 'Ungültige Bestelldaten oder E-Mail' });
+  }
+
+  try {
+    const customerNameParts = (orderData.customer.name || '').split(' ');
+    const firstName = customerNameParts[0] || '';
+    const lastName = customerNameParts.slice(1).join(' ') || '';
+
+    const orderTime = new Date(orderData.preOrder).toLocaleString('de-DE');
+
+    const { data, error } = await resend.emails.send({
+      from: 'Zaziano Restaurant <info@zaziano.de>',
+      to: [orderData.customer.email],
+      subject: `Ihre Bestellung #${orderId} wurde storniert – Zaziano Restaurant`,
+      html: `
+        <div style="direction: ltr; text-align: left; padding: 20px; background: #f9f9f9; font-family: Arial, sans-serif;">
+          <h2 style="color: #d32f2f;">Wir bitten um Entschuldigung</h2>
+          <p>Sehr geehrter${firstName ? 'r' : ''} ${firstName} ${lastName},</p>
+          <p>leider müssen wir Ihre Bestellung <strong>#${orderId}</strong> vom ${orderTime} stornieren.</p>
+          
+          ${
+            refunded
+              ? `
+                <p style="background: #fff8e1; padding: 12px; border-left: 4px solid #ffc107; margin: 15px 0;">
+                  <strong>✅ Gute Nachricht:</strong> Da Sie online bezahlt haben, wurde der volle Betrag 
+                  <strong>${orderData.totalPrice.toFixed(2)} €</strong> bereits an Ihre Zahlungsmethode zurückerstattet.
+                  Die Gutschrift kann je nach Bank 2–5 Werktage dauern.
+                </p>
+              `
+              : `
+                <p>Da Sie bei Lieferung/Abholung bar zahlen wollten, entstehen Ihnen keine Kosten.</p>
+              `
+          }
+
+          <p>Wir entschuldigen uns aufrichtig für die Unannehmlichkeiten.</p>
+          <p>Sollten Sie Fragen haben, stehen wir Ihnen gerne zur Verfügung.</p>
+
+          <hr style="margin: 25px 0; border: 1px solid #eee;" />
+          <p>
+            <strong>Zaziano Restaurant</strong><br/>
+            <strong>Telefon:</strong> <a href="tel:+4917660366606" style="color: #d32f2f; text-decoration: none;">+49 176 60366606</a><br/>
+            <strong>E-Mail:</strong> <a href="mailto:info@zaziano.de" style="color: #d32f2f; text-decoration: none;">info@zaziano.de</a>
+          </p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error('Resend Fehler beim Senden der Stornierungs-E-Mail:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(200).json({ message: 'Stornierungs-E-Mail erfolgreich gesendet' });
+  } catch (err) {
+    console.error('Serverfehler beim Senden der Stornierungs-E-Mail:', err);
     return res.status(500).json({ error: 'E-Mail konnte nicht gesendet werden.' });
   }
 });
@@ -697,13 +780,24 @@ app.post('/api/create-checkout-session', async (req, res) => {
       ],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `https://www.zaziano.de/payment-success?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: 'https://www.zaziano.de/payment-failed',
+      success_url: `http://localhost:5173/payment-success?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: 'http://localhost:5173/payment-failed',
       customer_email: customerEmail,
       metadata: { order_id: orderId }
     });
 
     res.json({ id: session.id });
+
+    // في نهاية معالج /api/create-checkout-session، بعد إنشاء session
+    const order = await Order.findOneAndUpdate(
+      { id: orderId }, // ← ملاحظة: نستخدم { id: orderId } وليس _id
+      { stripeSessionId: session.id },
+      { new: true }
+    );
+
+    if (!order) {
+      console.warn('Order not found to attach stripeSessionId:', orderId);
+    }
   } catch (err) {
     console.error('Zahlungssitzung konnte nicht erstellt werden:', err);
     res.status(500).json({ error: err.message });
@@ -722,6 +816,88 @@ app.get('/api/checkout-session', async (req, res) => {
   }
 });
 
+app.post('/api/refund-order-by-id', async (req, res) => {
+  const { order_id } = req.body; // هذا هو الـ id الرقمي من نموذجك (ليس _id)
+
+  if (!order_id || isNaN(order_id)) {
+    return res.status(400).json({ error: 'Valid order_id (number) is required' });
+  }
+
+  try {
+    // 1. ابحث عن الطلب باستخدام الحقل `id` (الرقمي)
+    const order = await Order.findOne({ id: order_id });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // 2. تحقق من الاسترداد المسبق
+    if (order.refundedAt) {
+      return res.status(400).json({ error: 'This order has already been refunded' });
+    }
+
+    if (!order.stripeSessionId) {
+      return res.status(400).json({ error: 'No Stripe session linked to this order' });
+    }
+
+    // 3. استرجع الجلسة من Stripe
+    const session = await stripe.checkout.sessions.retrieve(order.stripeSessionId, {
+      expand: ['payment_intent']
+    });
+
+    if (!session.payment_intent) {
+      return res.status(400).json({ error: 'Payment intent not found' });
+    }
+
+    if (session.payment_intent.status !== 'succeeded') {
+      return res.status(400).json({ error: 'Payment was not successful' });
+    }
+
+    const paymentIntentId = session.payment_intent.id;
+
+    // 4. تحقق من وجود استرداد سابق في Stripe (للمرونة)
+    const existingRefunds = await stripe.refunds.list({ payment_intent: paymentIntentId });
+    if (existingRefunds.data.length > 0) {
+      // مزامنة مع قاعدة البيانات
+      await Order.findOneAndUpdate(
+        { id: order_id },
+        {
+          refundedAt: new Date(),
+          stripeRefundId: existingRefunds.data[0].id,
+          stripePaymentIntentId: paymentIntentId
+        }
+      );
+      return res.status(400).json({ error: 'Payment already refunded' });
+    }
+
+    // 5. نفّذ الاسترداد الكامل
+    const refund = await stripe.refunds.create({
+      payment_intent: paymentIntentId
+    });
+
+    // 6. حدّث الطلب في MongoDB
+    await Order.findOneAndUpdate(
+      { id: order_id },
+      {
+        refundedAt: new Date(),
+        stripeRefundId: refund.id,
+        stripePaymentIntentId: paymentIntentId,
+        status: 'cancelled' // أو 'refunded' حسب منطقك
+      }
+    );
+
+    res.json({
+      success: true,
+      refund_id: refund.id,
+      amount_refunded: refund.amount, // بالسنتات
+      currency: refund.currency
+    });
+
+  } catch (err) {
+    console.error('Refund failed for order ID:', order_id, err);
+    res.status(500).json({ error: err.message || 'Refund process failed' });
+  }
+});
 
 app.get('/api/google-maps-key', (req, res) => {
   // المفتاح مخفي في ملف .env
