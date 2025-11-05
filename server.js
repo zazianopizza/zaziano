@@ -770,13 +770,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
         'paypal',
         'sepa_debit',
         'klarna',
-        'giropay',
-        'eps',
-        'p24',           // ❌ ليس 'przelewy24'
-        'ideal',
-        'alipay',
-        'link'// للولايات المتحدة'affirm', 
-        //'afterpay_clearpay'
+        'eps',         // ❌ ليس 'przelewy24'
+        'link'
       ],
       line_items: lineItems,
       mode: 'payment',
