@@ -597,7 +597,7 @@ app.post('/api/send-cancellation-email', async (req, res) => {
           <p>leider müssen wir Ihre Bestellung <strong>#${orderId}</strong> vom ${orderTime} stornieren.</p>
           
           ${
-            refunded
+            orderData.paymentMethod === 'card'
               ? `
                 <p style="background: #fff8e1; padding: 12px; border-left: 4px solid #ffc107; margin: 15px 0;">
                   <strong>✅ Gute Nachricht:</strong> Da Sie online bezahlt haben, wurde der volle Betrag 
