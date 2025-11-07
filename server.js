@@ -768,9 +768,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: [
         'card',
         'paypal',
-        'sepa_debit',
         'klarna',
-        'eps',         // ❌ ليس 'przelewy24'
+        'eps',        
         'link'
       ],
       line_items: lineItems,
