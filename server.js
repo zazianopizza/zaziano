@@ -707,49 +707,73 @@ app.put('/api/opening-hours', async (req, res) => {
 
 // --- إنشاء جلسة دفع ---
 app.post('/api/create-checkout-session', async (req, res) => {
-  const { items, customerEmail, orderId, deliveryType,deliveryFee } = req.body;
+  const { items, customerEmail, orderId, deliveryType, deliveryFee } = req.body;
 
   try {
-    let lineItems = items.flatMap(item => {
-       const description = item.sizeLabel && item.sizeLabel.trim() !== '' 
-      ? item.sizeLabel 
-      : 'Keine Größe';
-      const productItems = [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: item.name,
-              ...(description && { description })
-            },
-            unit_amount: Math.round(item.basePrice * 100)
-          },
-          quantity: item.quantity
+    // 1. حساب المجموع المؤهل (المنتجات + الملحقات) بالسنتات
+    let eligibleTotalCents = 0;
+
+    // جمع المبالغ دون تعديل
+    for (const item of items) {
+      eligibleTotalCents += Math.round(item.basePrice * 100) * item.quantity;
+      if (item.extras && Array.isArray(item.extras)) {
+        for (const ex of item.extras) {
+          if (ex.quantity > 0) {
+            eligibleTotalCents += Math.round(ex.price * 100) * ex.quantity;
+          }
         }
-      ];
-
-      // أضف الملحقات
-      if (item.extras && item.extras.length > 0) {
-        const addonItems = item.extras
-          .filter(ex => ex.quantity > 0)
-          .map(ex => ({
-            price_data: {
-              currency: 'eur',
-              product_data: {
-                name: `${ex.name}`,
-                description: `${item.name} (${item.sizeLabel})`
-              },
-              unit_amount: Math.round(ex.price * 100)
-            },
-            quantity: ex.quantity
-          }));
-        return [...productItems, ...addonItems];
       }
+    }
 
-      return productItems;
-    });
+    // 2. تحديد ما إذا كان الخصم ينطبق
+    const applyDiscount = eligibleTotalCents >= 2000; // 20€ = 2000 سنت
 
-    // ✅ أضف رسوم التوصيل كعنصر منفصل إذا كان التوصيل مطلوبًا
+    // 3. بناء lineItems مع الخصم المطبّق مباشرة على الوحدات (إن وُجد)
+    const lineItems = [];
+
+    for (const item of items) {
+      const basePriceCents = Math.round(item.basePrice * 100);
+      const finalBasePrice = applyDiscount ? Math.round(basePriceCents * 0.8500) : basePriceCents;
+
+      const description = item.sizeLabel && item.sizeLabel.trim() !== ''
+        ? item.sizeLabel
+        : 'Keine Größe';
+
+      lineItems.push({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: item.name,
+            ...(description && { description })
+          },
+          unit_amount: finalBasePrice // ← معدّل أو أصلي
+        },
+        quantity: item.quantity
+      });
+
+      if (item.extras && Array.isArray(item.extras)) {
+        for (const ex of item.extras) {
+          if (ex.quantity > 0) {
+            const addonPriceCents = Math.round(ex.price * 100);
+            const finalAddonPrice = applyDiscount ? Math.round(addonPriceCents * 0.8500) : addonPriceCents;
+
+            lineItems.push({
+              price_data: {
+                currency: 'eur',
+                product_data: {
+                  name: ex.name,
+                  description: `${item.name} (${item.sizeLabel})`
+                },
+                unit_amount: finalAddonPrice // ← معدّل أو أصلي
+              },
+              quantity: ex.quantity
+            });
+          }
+        }
+      }
+    }
+
+    // 4. إضافة رسوم التوصيل دون أي خصم
     if (deliveryType === 'delivery') {
       lineItems.push({
         price_data: {
@@ -758,18 +782,20 @@ app.post('/api/create-checkout-session', async (req, res) => {
             name: 'Lieferung',
             description: 'für die Lieferung'
           },
-          unit_amount: Math.round(deliveryFee * 100) // ⚠️ التحويل إلى سنتات
+          unit_amount: Math.round(deliveryFee * 100)
         },
         quantity: 1
       });
     }
 
+    // 5. إنشاء جلسة الدفع
     const session = await stripe.checkout.sessions.create({
       payment_method_types: [
         'card',
         'paypal',
+        'sepa_debit',
         'klarna',
-        'eps',        
+        'eps',
         'link'
       ],
       line_items: lineItems,
@@ -780,11 +806,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
       metadata: { order_id: orderId }
     });
 
-    res.json({ id: session.id });
-
-    // في نهاية معالج /api/create-checkout-session، بعد إنشاء session
+    // 6. ربط الجلسة بالطلب
     const order = await Order.findOneAndUpdate(
-      { id: orderId }, // ← ملاحظة: نستخدم { id: orderId } وليس _id
+      { id: orderId },
       { stripeSessionId: session.id },
       { new: true }
     );
@@ -792,6 +816,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
     if (!order) {
       console.warn('Order not found to attach stripeSessionId:', orderId);
     }
+
+    res.json({ id: session.id });
+
   } catch (err) {
     console.error('Zahlungssitzung konnte nicht erstellt werden:', err);
     res.status(500).json({ error: err.message });
